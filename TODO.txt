@@ -1,0 +1,11 @@
+TODO:
+
+- Butterflies: Make more butterflies happen -- it's kind of scarce with the butterflies atm.
+- Butterflies: Make it so that the butterflies are more likely to come toward the center of the screen.
+- Silhouettes: Transition into it better, rather than a flash-intro.
+    - Idea: Fade into it from gray?
+    - Idea: Grow into it? Maybe it erodes too much at first, then less, until it reaches the desired amount? So, it'll be like shapes grow.
+- Refactor: Make it a multi-file package structure.
+- Silhouettes: Change the color of the silhouette from just plain white.
+- Silhouettes: Add spellcasting. (Via Conway's Game of Life, or something similar?)
+- Bug: Transitions: Make it so that Silhouettes actually can go back to Butterflies.

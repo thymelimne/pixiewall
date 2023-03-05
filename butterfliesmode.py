@@ -6,79 +6,10 @@ import sys
 from pygame.locals import *
 from random import random as rand
 
-# define a video capture object
-vid = cv2.VideoCapture(0)
-sub = cv2.createBackgroundSubtractorKNN(history=100, dist2Threshold=400, detectShadows=False)
-
-# Dimensions for cropping
-outputx = 64
-outputy = 25
-inputx = vid.read()[1].shape[1]
-inputy = vid.read()[1].shape[0]
-desiredaspectratio = outputx / outputy
-ypixelstokeep = inputx * desiredaspectratio
-y1 = int(inputy - ypixelstokeep)
-y2 = inputy
-x1 = 0
-x2 = inputx
-
-# Pygame
-pygame.init()
-screen = pygame.display.set_mode([inputx, inputy], pygame.FULLSCREEN)
-pygame.display.set_caption('game')
-clock = pygame.time.Clock()
-pygame.display.update()
-running = True
-print(inputx)
-print(inputy)
-
-
-def capframe():
-
-    # Frame
-    ret, frame = vid.read()
-
-    # Crop
-    frame = frame[y1:y2, x1:x2]
-
-    # Blur
-    kernel = np.ones((4, 8), np.float32) / 25
-    frame = cv2.filter2D(frame, -1, kernel)
-
-    # Threshold
-    ret, frame = cv2.threshold(frame, 127, 255, cv2.THRESH_BINARY)
-
-    # Subtract background
-    frame = sub.apply(frame)
-
-    # Blur
-    frame = cv2.filter2D(frame, -1, kernel)
-
-    # Threshold
-    ret, frame = cv2.threshold(frame, 127, 255, cv2.THRESH_BINARY)
-
-    # Erode
-    ke1 = np.ones((6, 6), np.float32)
-    frame = cv2.erode(frame, ke1, iterations=2)
-
-    # Dilate
-    kd1 = np.ones((6, 6), np.float32)
-    frame = cv2.dilate(frame, kd1, iterations=2)
-
-    #Put to the screen
-    surface = pygame.surfarray.make_surface(np.rot90(frame))
-    screen.blit(surface, (0, 0))
-
-    global mode
-    if cv2.countNonZero(frame) < 10:
-        print(cv2.countNonZero(frame))
-        mode = 2
-        return mode
-
 
 class Butterfly:
 
-    def __init__(self, loc):
+    def __init__(self, loc, screen):
         self.locx = loc[0]
         self.locy = loc[1]
         self.angle = rand() * 360
@@ -92,9 +23,11 @@ class Butterfly:
         self.boostspeed *= sizecoef
         #self.color = (0, 255, 0)
 
+        self.surface = screen
+
     #color = BLUE
     speed = 2
-    surface = screen
+    #surface = screen
 
     locx = 200
     locy = 150
@@ -229,16 +162,18 @@ class Butterfly:
 
 class Swarm:
     butterflies = []
-    surface = screen
+    #surface = screen
     timespawn = 0
     bz = 60
-    def __init__(self):
+    def __init__(self, screen, clock):
         self.num_empties = rand() * 10
+        self.surface = screen
+        self.clock = clock
     should_transition = False
     def add(self, b):
         self.butterflies.append(b)
     def timestep(self):
-        screen.fill(0)
+        self.surface.fill(0)
         for b in self.butterflies:
             b.timestep()
             size = self.surface.get_size()
@@ -256,7 +191,7 @@ class Swarm:
         else:
             self.spawn()
             self.timespawn = rand() * 300
-        clock.tick(60)
+        self.clock.tick(60)
         global mode
         if self.should_transition:
             mode = 1
@@ -278,52 +213,6 @@ class Swarm:
         elif loc[1] > self.surface.get_size()[1]:
             angle = rand() * 90 if rand() < .5 else 270 * rand() * 90
         print(loc)
-        b = Butterfly(loc)
+        b = Butterfly(loc, self.surface)
         print(b.angle)
         self.add(b)
-
-
-b1 = Butterfly([100, 200])
-b2 = Butterfly([300, 400])
-s = Swarm()
-s.add(b1)
-s.add(b2)
-s.spawn()
-
-def reset_butterflies():
-    s.butterflies.clear()
-
-def reset_silhouettes():
-    pass
-
-mode = 2
-while running:
-
-    if mode == 1:
-        toswitch = capframe()
-        if (toswitch==2):
-            reset_butterflies()
-    if mode == 2:
-        toswitch = s.timestep()
-        if (toswitch==1):
-            reset_silhouettes()
-    pygame.display.update()
-
-    # 'q' to quit
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
-                running = False
-            if event.key == pygame.K_1:
-                mode = 1
-            if event.key == pygame.K_2:
-                mode = 2
-
-# After the loop release the cap object
-vid.release()
-cv2.destroyAllWindows()
-pygame.quit()
