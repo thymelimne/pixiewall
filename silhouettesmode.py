@@ -19,7 +19,7 @@ def randomlyblackenrowsinmatrix(matrix, fractiontobeblack):
     return np.array([randomlyblackenpixelsinrow(row, fractiontobeblack) for row in matrix])
 
 
-starttime = 50
+starttime = 50 
 def capframe(vid, y1, y2, x1, x2, sub, screen, g):
 
     # Frame
@@ -55,7 +55,7 @@ def capframe(vid, y1, y2, x1, x2, sub, screen, g):
     # Fadein
     global starttime
     if g.t < starttime:
-        frame = randomlyblackenrowsinmatrix(frame, 1-g.t/starttime)
+        frame = frame[::starttime + 1 - g.t]
 
     #Put to the screen
     surface = pygame.surfarray.make_surface(np.rot90(frame))
