@@ -41,28 +41,31 @@ s = butterfliesmode.Swarm(screen, clock)
 #s.add(b2)
 s.spawn()
 
-def reset_butterflies():
+def reset_butterflies(g):
     print("RESETTING BUTTERFLIES")
     s = butterfliesmode.Swarm(screen, clock)
+    g.t = 0
     print(s.num_empties)
 
-def reset_silhouettes():
+def reset_silhouettes(g):
     print("RESETTING SILHOUETTES")
+    g.t = 0
     pass
 
 class Game:
     mode = 2
+    t = 0
 g = Game()
 while running:
 
     if g.mode == 1:
         silhouettesmode.capframe(vid, y1, y2, x1, x2, sub, screen, g)
         if g.mode == 2:
-            reset_butterflies()
+            reset_butterflies(g)
     if g.mode == 2:
         s.timestep(g)
         if g.mode == 1:
-            reset_silhouettes()
+            reset_silhouettes(g)
     pygame.display.update()
 
     # 'q' to quit
@@ -76,8 +79,10 @@ while running:
                 running = False
             if event.key == pygame.K_1:
                 g.mode = 1
+                reset_silhouettes(g)
             if event.key == pygame.K_2:
                 g.mode = 2
+                reset_butterflies(g)
 
 # After the loop release the cap object
 vid.release()

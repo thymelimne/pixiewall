@@ -61,6 +61,19 @@ class Butterfly:
     def rotatepoints(self, origin, points, theta):
         return np.array([self.rotatepoint(origin, point, theta) for point in points])
 
+    '''
+        BLACK_PIXEL = # Definition of a black pixel in an OpenCV image (My guess: it's a numpy.ndarray that contains just 3 float32 elements.)        
+    
+        def randomlyblackensinglepixel(pixel, fractiontobeblack):
+            return BLACK_PIXEL if rand() < fractiontobeblack else pixel
+        
+        def randomlyblackenpixelsinrow(row, fractiontobeblack):
+            return np.array([randomlyblackensinglepixel(pixel, fractiontobeblack) for pixel in row])
+        
+        def randomlyblackenrowsinmatrix(matrix, fractiontobeblack):
+            return np.array([randomlyblackenpixelsinrow(row, fractiontobeblack) for row in matrix])
+    '''
+
 
     def butterfly(self):
         wing1full = np.asarray(

@@ -8,8 +8,8 @@ TODO:
 X- Refactor: Make it a multi-file package structure.
 - Silhouettes: Change the color of the silhouette from just plain white.
 - Silhouettes: Add spellcasting. (Via Conway's Game of Life, or something similar?)
-- Bug: Transitions: Make it so that Silhouettes actually can go back to Butterflies.
-    - Attempt: It seems that it does go back to Butterflies, but then just immediately goes back to Silhouettes.
+X- Bug: Transitions: Make it so that Silhouettes actually can go back to Butterflies.
+    X- Attempt: It seems that it does go back to Butterflies, but then just immediately goes back to Silhouettes.
 
 For the project in general, non-SW:
 
