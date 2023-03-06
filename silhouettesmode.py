@@ -8,7 +8,7 @@ from random import random as rand
 
 
 
-def capframe(vid, y1, y2, x1, x2, sub, screen):
+def capframe(vid, y1, y2, x1, x2, sub, screen, g):
 
     # Frame
     ret, frame = vid.read()
@@ -44,8 +44,8 @@ def capframe(vid, y1, y2, x1, x2, sub, screen):
     surface = pygame.surfarray.make_surface(np.rot90(frame))
     screen.blit(surface, (0, 0))
 
-    global mode
     if cv2.countNonZero(frame) < 10:
         print(cv2.countNonZero(frame))
-        mode = 2
-        return mode
+        g.mode = 2
+        print("SILHOUETTES SCREEN IS EMPTY.")
+        return g.mode

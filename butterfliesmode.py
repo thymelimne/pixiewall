@@ -165,6 +165,7 @@ class Swarm:
     #surface = screen
     timespawn = 0
     bz = 60
+    spawnrarity = 300
     def __init__(self, screen, clock):
         self.num_empties = rand() * 10
         self.surface = screen
@@ -172,7 +173,7 @@ class Swarm:
     should_transition = False
     def add(self, b):
         self.butterflies.append(b)
-    def timestep(self):
+    def timestep(self, g):
         self.surface.fill(0)
         for b in self.butterflies:
             b.timestep()
@@ -183,6 +184,7 @@ class Swarm:
                 del b
                 if not self.butterflies:
                     print("_____EMPTY SCREEN______")
+                    print(self.num_empties)
                     self.num_empties -= 1
                 if not self.num_empties > 0:
                     self.should_transition = True
@@ -190,11 +192,10 @@ class Swarm:
            self.timespawn -= 1
         else:
             self.spawn()
-            self.timespawn = rand() * 300
+            self.timespawn = rand() * self.spawnrarity
         self.clock.tick(60)
-        global mode
         if self.should_transition:
-            mode = 1
+            g.mode = 1
     def spawn(self):
         loc = [100, 100]
         if rand() < .5:
@@ -212,7 +213,13 @@ class Swarm:
             angle = 90 + rand() * 180
         elif loc[1] > self.surface.get_size()[1]:
             angle = rand() * 90 if rand() < .5 else 270 * rand() * 90
-        print(loc)
+
+        print(self.spawnrarity)
+        if self.spawnrarity < 30:
+            self.spawnrarity += rand() * 300
+        else:
+            self.spawnrarity -= rand() * 10
+        print(self.spawnrarity)
+
         b = Butterfly(loc, self.surface)
-        print(b.angle)
         self.add(b)
