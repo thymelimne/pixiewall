@@ -166,6 +166,7 @@ class Swarm:
     timespawn = 0
     bz = 60
     spawnrarity = 300
+    startbuffertime = 50
     def __init__(self, screen, clock):
         self.num_empties = rand() * 10
         self.surface = screen
@@ -182,7 +183,7 @@ class Swarm:
                 print("deleted")
                 self.butterflies.remove(b)
                 del b
-                if not self.butterflies:
+                if not self.butterflies and not self.startbuffertime > 0:
                     print("_____EMPTY SCREEN______")
                     print(self.num_empties)
                     self.num_empties -= 1
@@ -194,7 +195,9 @@ class Swarm:
             self.spawn()
             self.timespawn = rand() * self.spawnrarity
         self.clock.tick(60)
-        if self.should_transition:
+        if self.startbuffertime > 0:
+            self.startbuffertime -= 1
+        elif self.should_transition:
             g.mode = 1
     def spawn(self):
         loc = [100, 100]

@@ -34,16 +34,17 @@ running = True
 print(inputx)
 print(inputy)
 
-b1 = butterfliesmode.Butterfly([100, 200], screen)
-b2 = butterfliesmode.Butterfly([300, 400], screen)
+#b1 = butterfliesmode.Butterfly([100, 200], screen)
+#b2 = butterfliesmode.Butterfly([300, 400], screen)
 s = butterfliesmode.Swarm(screen, clock)
-s.add(b1)
-s.add(b2)
+#s.add(b1)
+#s.add(b2)
 s.spawn()
 
 def reset_butterflies():
     print("RESETTING BUTTERFLIES")
     s = butterfliesmode.Swarm(screen, clock)
+    print(s.num_empties)
 
 def reset_silhouettes():
     print("RESETTING SILHOUETTES")
