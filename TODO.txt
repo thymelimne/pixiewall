@@ -35,3 +35,4 @@ For the project in general, non-SW:
 - Set it up so that the FPP RaspPi can alternate between this program and other FPP programs. (David's assignment)
 
 (TEST from Raspberry Pi)
+(TEST from MacBook)
