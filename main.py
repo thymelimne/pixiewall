@@ -7,6 +7,10 @@ from pygame.locals import *
 from random import random as rand
 import butterfliesmode
 import silhouettesmode
+import time
+
+time.sleep(20)
+starttime = time.time()
 
 # define a video capture object
 vid = cv2.VideoCapture(0)
@@ -83,6 +87,12 @@ while running:
             if event.key == pygame.K_2:
                 g.mode = 2
                 reset_butterflies(g)
+                
+    currenttime = time.time() - starttime
+    print(" c u r r e n t t i m e : " + str(currenttime))
+    if currenttime > 100:
+        running = False
+    
 
 # After the loop release the cap object
 vid.release()
