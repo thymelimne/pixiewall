@@ -13,9 +13,9 @@ X- Bug: Transitions: Make it so that Silhouettes actually can go back to Butterf
 
 For the project in general, non-SW:
 
-- Make sure the RaspPi can execute the .py file upon reboot, without me needing to interact with it.
-- Construct a holding stick for the camera, to safely dangle it over the wall.
-- Construct a makeshift ammo box for the two Rasp Pis, with a power splitter inside, to power them and also have both Ethernet and USB-A wires coming out of it.
+X- Make sure the RaspPi can execute the .py file upon reboot, without me needing to interact with it.
+X- Construct a holding stick for the camera, to safely dangle it over the wall.
+X- Construct a makeshift ammo box for the two Rasp Pis, with a power splitter inside, to power them and also have both Ethernet and USB-A wires coming out of it.
 - Fix the flickering light currently on that wall.
 	- Climb atop the manifold.
 	- Unplug & replug lights until you find the one that's flickering. Mark that with pink or green marking tape.
