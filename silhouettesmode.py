@@ -5,19 +5,7 @@ import pygame
 import sys
 from pygame.locals import *
 from random import random as rand
-
-'''
-def randomlyblackensinglepixel(pixel, fractiontobeblack):
-    return pixel * 0 if rand() < fractiontobeblack else pixel
-
-
-def randomlyblackenpixelsinrow(row, fractiontobeblack):
-    return np.array([randomlyblackensinglepixel(pixel, fractiontobeblack) for pixel in row])
-
-
-def randomlyblackenrowsinmatrix(matrix, fractiontobeblack):
-    return np.array([randomlyblackenpixelsinrow(row, fractiontobeblack) for row in matrix])
-'''
+import time
 
 kernel = np.ones((4, 8), np.float32) / 25
 ke1 = np.ones((6, 6), np.float32)
@@ -56,12 +44,6 @@ def capframe(vid, y1, y2, x1, x2, sub, screen, g):
     #kd1 = np.ones((6, 6), np.float32)
     frame = cv2.dilate(frame, kd1, iterations=2)
 
-    '''
-    # Fadein
-    global starttime
-    if g.t < starttime:
-        frame = frame[::starttime + 1 - g.t]
-    '''
     # Avoid playing that blip of white-screen at the beginning
     if g.t < 5:
         frame *= 0
@@ -75,3 +57,62 @@ def capframe(vid, y1, y2, x1, x2, sub, screen, g):
         g.mode = 2
         return g.mode
     g.t += 1
+
+if __name__ == "__main__":
+    time.sleep(2)
+    starttime = time.time()
+
+    # define a video capture object
+    vid = cv2.VideoCapture(0)
+    sub = cv2.createBackgroundSubtractorKNN(history=100, dist2Threshold=400, detectShadows=False)
+
+    # Dimensions for cropping
+    outputx = 64
+    outputy = 25
+    inputx = vid.read()[1].shape[1]
+    inputy = vid.read()[1].shape[0]
+    desiredaspectratio = outputx / outputy
+    ypixelstokeep = inputx * desiredaspectratio
+    y1 = int(inputy - ypixelstokeep)
+    y2 = inputy
+    x1 = 0
+    x2 = inputx
+
+    # Pygame
+    pygame.init()
+    screen = pygame.display.set_mode([inputx, inputy], pygame.FULLSCREEN)
+    pygame.display.set_caption('game')
+    clock = pygame.time.Clock()
+    pygame.display.update()
+    running = True
+    print(inputx)
+    print(inputy)
+
+
+    class Game:
+        mode = 2
+        t = 0
+
+
+    g = Game()
+    while running:
+        capframe(vid, y1, y2, x1, x2, sub, screen, g)
+        pygame.display.update()
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    running = False
+
+        currenttime = time.time() - starttime
+        if currenttime > 100:
+            running = False
+
+    # After the loop release the cap object
+    vid.release()
+    cv2.destroyAllWindows()
+    pygame.quit()

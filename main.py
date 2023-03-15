@@ -9,7 +9,7 @@ import butterfliesmode
 import silhouettesmode
 import time
 
-time.sleep(20)
+time.sleep(2)
 starttime = time.time()
 
 # define a video capture object
@@ -98,3 +98,4 @@ while running:
 vid.release()
 cv2.destroyAllWindows()
 pygame.quit()
+
