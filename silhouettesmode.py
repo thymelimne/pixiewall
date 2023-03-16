@@ -47,11 +47,9 @@ def capframe(vid, y1, y2, x1, x2, sub, screen, g):
     # Dilate
     frame = cv2.dilate(frame, kd1, iterations=2)
 
-    #'''
     # Avoid playing that blip of white-screen at the beginning
     if g.t < 5:
         frame *= 0
-    #'''
 
     if th > threshold:
         th -= 1
