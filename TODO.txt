@@ -37,5 +37,5 @@ X- Construct a makeshift ammo box for the two Rasp Pis, with a power splitter in
 (TEST from Raspberry Pi)
 (TEST from MacBook)
 
-(TEST for branches -- this should only appear in the mirrorindarkness branch.)
+(TEST for branch merging -- This should appear in both mirrorindarkness and master branches.)
 
