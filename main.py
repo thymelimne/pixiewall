@@ -5,8 +5,9 @@ import pygame
 import sys
 from pygame.locals import *
 from random import random as rand
-import butterfliesmode
+#import butterfliesmode
 import silhouettesmode
+import shamrocksmode
 import time
 
 time.sleep(2)
@@ -35,31 +36,33 @@ pygame.display.set_caption('game')
 clock = pygame.time.Clock()
 pygame.display.update()
 running = True
-print(inputx)
-print(inputy)
+print(inputx)  # 1280
+print(inputy)  # 720
 
-#b1 = butterfliesmode.Butterfly([100, 200], screen)
-#b2 = butterfliesmode.Butterfly([300, 400], screen)
-s = butterfliesmode.Swarm(screen, clock)
-#s.add(b1)
-#s.add(b2)
-s.spawn()
 
 def reset_butterflies(g):
     print("RESETTING BUTTERFLIES")
-    s = butterfliesmode.Swarm(screen, clock)
+    s = shamrocksmode.Billow(screen, clock)
     g.t = 0
     print(s.num_empties)
+
 
 def reset_silhouettes(g):
     print("RESETTING SILHOUETTES")
     g.t = 0
     pass
 
+
 class Game:
     mode = 2
     t = 0
+
+
 g = Game()
+s = shamrocksmode.Billow(screen, clock, g)
+s.spawn()
+
+
 while running:
 
     if g.mode == 1:

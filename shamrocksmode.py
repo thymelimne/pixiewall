@@ -7,14 +7,17 @@ from pygame.locals import *
 from random import random as rand
 
 
-class Butterfly:
+class Shamrock:
+
+    image = pygame.image.load("fourleaf.png")
 
     def __init__(self, loc, screen):
         self.locx = loc[0]
         self.locy = loc[1]
         self.angle = rand() * 360
         self.updatespeeds()
-        self.color = (255, rand()*255, rand()*255)
+        #self.color = (255, rand()*255, rand()*255)
+        self.color = (0, 100 + rand()*155, 0)
 
         sizecoef = .5 + rand()
         self.size *= sizecoef
@@ -59,7 +62,7 @@ class Butterfly:
         return np.array([self.rotatepoint(origin, point, theta) for point in points])
 
 
-    def butterfly(self):
+    def draw(self):
         wing1full = np.asarray(
             ((0, 0), (30, -70), (100, -100), (150, -110), (160, -90), (150, -40), (140, -10), (70, 50),
              (100, 70), (120, 100), (130, 120), (120, 160), (100, 190), (80, 200), (50, 190), (10, 140), (0, 110)),
@@ -129,7 +132,7 @@ class Butterfly:
         self.locx += self.speedx
         self.locy -= self.speedy
 
-        self.butterfly()  # This will call the animation
+        self.draw()  # This will call the animation
 
         self.shouldflap = self.agent()
         if self.shouldflap:
@@ -157,40 +160,46 @@ class Butterfly:
             self.updatespeeds()
 
 
-class Swarm:
-    butterflies = []
-    #surface = screen
+class Billow:
+    shamrocks = []
     timespawn = 0
     bz = 60
-    spawnrarity = 300
+    spawnrarity = .0000001
     startbuffertime = 50
-    def __init__(self, screen, clock):
+    def __init__(self, screen, clock, g):
         self.num_empties = rand() * 10
         self.surface = screen
         self.clock = clock
+        self.g = g
     should_transition = False
     def add(self, b):
-        self.butterflies.append(b)
+        self.shamrocks.append(b)
     def timestep(self, g):
         self.surface.fill(0)
-        for b in self.butterflies:
+        for b in self.shamrocks:
             b.timestep()
+
+            # Trying this:
+            #self.surface.blit(b.image, (b.locx, b.locy))
+
             size = self.surface.get_size()
             if b.locx < -60 or b.locx > size[0] + 60 or b.locy < -60 or b.locy > size[1] + 60:
-                print("deleted")
-                self.butterflies.remove(b)
+                self.shamrocks.remove(b)
                 del b
-                if not self.butterflies and not self.startbuffertime > 0:
-                    print("_____EMPTY SCREEN______")
+                if not self.shamrocks and not self.startbuffertime > 0:
                     print(self.num_empties)
                     self.num_empties -= 1
                 if not self.num_empties > 0:
                     self.should_transition = True
+        '''
         if self.timespawn > 0:
            self.timespawn -= 1
         else:
             self.spawn()
             self.timespawn = rand() * self.spawnrarity
+        '''
+        if rand() < .1:
+            self.spawn()
         self.clock.tick(60)
         if self.startbuffertime > 0:
             self.startbuffertime -= 1
@@ -198,13 +207,17 @@ class Swarm:
             g.mode = 1
     def spawn(self):
         loc = [100, 100]
+        '''
         if rand() < .5:
             loc[0] = self.surface.get_size()[0] + self.bz if rand() < .5 else 0-self.bz
             loc[1] = rand() * self.surface.get_size()[1]
         else:
             loc[0] = rand() * self.surface.get_size()[0]
             loc[1] = self.surface.get_size()[1] + self.bz if rand() < .5 else 0-self.bz
-        angle = 0
+        '''
+        loc[0] = rand() * self.surface.get_size()[0]
+        loc[1] = 0 - self.bz
+        #angle = 90
         if loc[0] < 0:
             angle = rand() * 180
         elif loc[0] > self.surface.get_size()[0]:
@@ -213,6 +226,7 @@ class Swarm:
             angle = 90 + rand() * 180
         elif loc[1] > self.surface.get_size()[1]:
             angle = rand() * 90 if rand() < .5 else 270 * rand() * 90
+        angle = 90
 
         print(self.spawnrarity)
         if self.spawnrarity < 30:
@@ -221,5 +235,5 @@ class Swarm:
             self.spawnrarity -= rand() * 10
         print(self.spawnrarity)
 
-        b = Butterfly(loc, self.surface)
+        b = Shamrock(loc, self.surface)
         self.add(b)
