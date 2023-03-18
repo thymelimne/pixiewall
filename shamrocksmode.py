@@ -9,14 +9,11 @@ from random import random as rand
 
 class Shamrock:
 
-    image = pygame.image.load("fourleaf.png")
-
     def __init__(self, loc, screen):
         self.locx = loc[0]
         self.locy = loc[1]
         self.angle = rand() * 360
         self.updatespeeds()
-        #self.color = (255, rand()*255, rand()*255)
         self.color = (0, 100 + rand()*155, 0)
 
         sizecoef = .5 + rand()
@@ -27,6 +24,8 @@ class Shamrock:
 
         self.surface = screen
 
+        self.anglespeed = -4 + rand() * 8
+
     speed = 2
 
     locx = 200
@@ -34,7 +33,7 @@ class Shamrock:
 
     size = .3
     spread = 1
-    mostthin = .1
+    mostthin = .01
     mostthick = 1
     thinning = False
     thicking = False
@@ -45,6 +44,9 @@ class Shamrock:
 
     regularspeed = 2
     boostspeed = 1
+
+    spinnedangle = 0
+    anglespeed = 0
 
     def updatespeeds(self):
         self.speedx = np.sin(np.radians(self.angle)) * self.speed
@@ -63,17 +65,6 @@ class Shamrock:
 
 
     def draw(self):
-        '''
-        wing1full = np.asarray(
-            ((0, 0), (30, -70), (100, -100), (150, -110), (160, -90), (150, -40), (140, -10), (70, 50),
-             (100, 70), (120, 100), (130, 120), (120, 160), (100, 190), (80, 200), (50, 190), (10, 140), (0, 110)),
-            dtype=np.float64) #centerpoint is (100, 70)
-
-        wing1full = np.asarray(
-            ((0, 0), (10, -30), (40, -80), (80, -90), (100, -80), (110, -50), (130, 20), (100, 10), (70, 50),
-             (100, 70), (120, 100), (130, 120), (120, 160), (100, 190), (80, 200), (50, 190), (10, 140), (0, 110)),
-            dtype=np.float64)  # centerpoint is (100, 70)
-        #'''
         wing1full = np.asarray(
             ((0,0), (0,-30), (40,-80), (80,-90), (100, -80), (130,-50), (130,0), (100,30), (70,50), (100,70), (120,100), (130,120), (120,160), (100,190), (80,200), (50,190), (30,170), (10,140), (0,110)), dtype=np.float64
         )
@@ -84,6 +75,7 @@ class Shamrock:
         wing1 *= self.size
         wing2 *= self.size
 
+        '''
         # Thinning the wings
         wing1[:, 0] *= self.spread
         wing2[:, 0] *= self.spread
@@ -91,6 +83,11 @@ class Shamrock:
         # Rotating the wings
         wing1 = self.rotatepoints(np.array([0, 0]), wing1, np.radians(self.angle))
         wing2 = self.rotatepoints(np.array([0, 0]), wing2, np.radians(self.angle))
+        '''
+        # Spin the shamrocks freely
+        wing1 = self.rotatepoints(np.array([0,0]), wing1, np.radians(self.spinnedangle))
+        wing2 = self.rotatepoints(np.array([0,0]), wing2, np.radians(self.spinnedangle))
+        #'''
 
         # Placing the wings
         wing1[:, 0] = wing1[:, 0] + self.locx
@@ -168,6 +165,8 @@ class Shamrock:
         if self.speed > self.regularspeed:
             self.speed -= .01
             self.updatespeeds()
+
+        self.spinnedangle += self.anglespeed
 
 
 class Billow:
