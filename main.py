@@ -5,7 +5,6 @@ import pygame
 import sys
 from pygame.locals import *
 from random import random as rand
-#import butterfliesmode
 import silhouettesmode
 import shamrocksmode
 import time
@@ -13,15 +12,11 @@ import time
 time.sleep(2)
 starttime = time.time()
 
-# define a video capture object
-vid = cv2.VideoCapture(0)
-sub = cv2.createBackgroundSubtractorKNN(history=100, dist2Threshold=400, detectShadows=False)
-
 # Dimensions for cropping
 outputx = 64
 outputy = 25
-inputx = vid.read()[1].shape[1]
-inputy = vid.read()[1].shape[0]
+inputx = 1280
+inputy = 720
 desiredaspectratio = outputx / outputy
 ypixelstokeep = inputx * desiredaspectratio
 y1 = int(inputy - ypixelstokeep)
@@ -65,19 +60,10 @@ s.spawn()
 
 while running:
 
-    if g.mode == 1:
-        silhouettesmode.capframe(vid, y1, y2, x1, x2, sub, screen, g)
-        if g.mode == 2:
-            reset_butterflies(g)
-    if g.mode == 2:
-        s.timestep(g)
-        if g.mode == 1:
-            reset_silhouettes(g)
+    s.timestep(g)
     pygame.display.update()
 
     # 'q' to quit
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -92,13 +78,6 @@ while running:
                 reset_butterflies(g)
                 
     currenttime = time.time() - starttime
-    print(" c u r r e n t t i m e : " + str(currenttime))
-    if currenttime > 100:
-        running = False
     
-
-# After the loop release the cap object
-vid.release()
-cv2.destroyAllWindows()
 pygame.quit()
 
