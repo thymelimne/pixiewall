@@ -13,7 +13,7 @@ th = 255
 ke1 = np.ones((6, 6), np.float32)
 kd1 = np.ones((6, 6), np.float32)
 starttime = 0
-def capframe(vid, y1, y2, x1, x2, sub, screen, g):
+def capframe(vid, y1, y2, x1, x2, sub, g):
     global kernel, ke1, kd1, threshold, th
 
     # Frame                     ~ video (but it's blue)
@@ -55,8 +55,10 @@ def capframe(vid, y1, y2, x1, x2, sub, screen, g):
         th -= 1
 
     #Put to the screen
-    surface = pygame.surfarray.make_surface(np.rot90(frame))
-    screen.blit(surface, (0, 0))
+    #surface = pygame.surfarray.make_surface(np.rot90(frame))
+    #screen.blit(surface, (0, 0))
+
+    return frame
 
     '''
     #Switch the mode, if necessary.
@@ -86,16 +88,6 @@ if __name__ == "__main__":
     x1 = 0
     x2 = inputx
 
-    # Pygame
-    pygame.init()
-    screen = pygame.display.set_mode([inputx, inputy], pygame.FULLSCREEN)
-    pygame.display.set_caption('game')
-    clock = pygame.time.Clock()
-    pygame.display.update()
-    running = True
-    print(inputx)
-    print(inputy)
-
 
     class Game:
         mode = 2
@@ -103,24 +95,25 @@ if __name__ == "__main__":
 
 
     g = Game()
+    running = True
+
     while running:
-        capframe(vid, y1, y2, x1, x2, sub, screen, g)
-        pygame.display.update()
+        frame = capframe(vid, y1, y2, x1, x2, sub, g)
+        cv2.imshow("Frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    running = False
 
         currenttime = time.time() - starttime
         if currenttime > 100:
             running = False
 
         g.t += 1
+
+    # After the loop release the cap object
+    vid.release()
+    # Destroy all the windows
+    cv2.destroyAllWindows()
 
     # After the loop release the cap object
     vid.release()
