@@ -22,7 +22,6 @@ def capframe(vid, y1, y2, x1, x2, sub, g):
     # Adjust colors             ~ correctly colored video
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    #'''
     # Crop                      ~ cropped video
     frame = frame[y1:y2, x1:x2]
 

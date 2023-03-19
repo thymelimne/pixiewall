@@ -13,16 +13,8 @@ time.sleep(2)
 starttime = time.time()
 
 # Dimensions for cropping
-outputx = 64
-outputy = 25
-inputx = 1280
-inputy = 720
-desiredaspectratio = outputx / outputy
-ypixelstokeep = inputx * desiredaspectratio
-y1 = int(inputy - ypixelstokeep)
-y2 = inputy
-x1 = 0
-x2 = inputx
+inputx = 25
+inputy = 16
 
 # Pygame
 pygame.init()
@@ -80,4 +72,3 @@ while running:
     currenttime = time.time() - starttime
     
 pygame.quit()
-

@@ -10,8 +10,7 @@ from random import random as rand
 class Shamrock:
 
     def __init__(self, loc, screen):
-        self.locx = loc[0]
-        self.locy = loc[1]
+        self.loc = loc
         self.angle = rand() * 360
         self.updatespeeds()
         self.color = (0, 100 + rand()*155, 0)
@@ -28,8 +27,7 @@ class Shamrock:
 
     speed = 2
 
-    locx = 200
-    locy = 150
+    loc = [200, 150]
 
     size = .3
     spread = 1
@@ -47,6 +45,7 @@ class Shamrock:
 
     spinnedangle = 0
     anglespeed = 0
+
 
     def updatespeeds(self):
         self.speedx = np.sin(np.radians(self.angle)) * self.speed
@@ -90,10 +89,10 @@ class Shamrock:
         #'''
 
         # Placing the wings
-        wing1[:, 0] = wing1[:, 0] + self.locx
-        wing1[:, 1] = wing1[:, 1] + self.locy
-        wing2[:, 0] = wing2[:, 0] + self.locx
-        wing2[:, 1] = wing2[:, 1] + self.locy
+        wing1[:, 0] = wing1[:, 0] + self.loc[0]
+        wing1[:, 1] = wing1[:, 1] + self.loc[1]
+        wing2[:, 0] = wing2[:, 0] + self.loc[0]
+        wing2[:, 1] = wing2[:, 1] + self.loc[1]
 
         pygame.draw.polygon(self.surface, self.color, points=wing1)
         pygame.draw.polygon(self.surface, self.color, points=wing2)
@@ -136,8 +135,8 @@ class Shamrock:
         self.updatespeeds()
 
     def timestep(self):
-        self.locx += self.speedx
-        self.locy -= self.speedy
+        self.loc[0] += self.speedx
+        self.loc[1] -= self.speedy
 
         self.draw()  # This will call the animation
 
@@ -192,7 +191,7 @@ class Billow:
             #self.surface.blit(b.image, (b.locx, b.locy))
 
             size = self.surface.get_size()
-            if b.locx < -60 or b.locx > size[0] + 60 or b.locy < -60 or b.locy > size[1] + 60:
+            if b.loc[0] < -60 or b.loc[0] > size[0] + 60 or b.loc[1] < -60 or b.loc[1] > size[1] + 60:
                 self.shamrocks.remove(b)
                 del b
                 if not self.shamrocks and not self.startbuffertime > 0:
@@ -200,13 +199,7 @@ class Billow:
                     self.num_empties -= 1
                 if not self.num_empties > 0:
                     self.should_transition = True
-        '''
-        if self.timespawn > 0:
-           self.timespawn -= 1
-        else:
-            self.spawn()
-            self.timespawn = rand() * self.spawnrarity
-        '''
+
         if rand() < .1:
             self.spawn()
         self.clock.tick(60)
