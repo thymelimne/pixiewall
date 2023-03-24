@@ -110,18 +110,25 @@ if __name__ == "__main__":
 
 	while running:
 		frame, wandloc, wandsize = get_wand(vid, topleft, bottomright, sub, g)
-		#cv2.imshow("Frame", frame)
 		print(wandloc)
 
-		# Update the size.
+		# Update the size of the main spell.
 		prev_size = s.size
 		new_size = max(60, 100 * wandsize)
 		s.size = new_size
 
-		# Update the thing.
 		g.window.fill((0, 0, 0))
-		pygame.draw.circle(g.window, color=s.color, center=(inputx-wandloc[0]*inputx,wandloc[1]*inputy), radius=s.size)
+
+		# Draw the rungs of the ladder.
+		for i in range(len(s.prev_spots)):
+			draw_size = s.prev_sizes[i] - 2 * i
+			pygame.draw.circle(g.window, color=s.color, center=s.prev_spots[i], radius=draw_size)
+
+		# Update the thing.
+		curr_spot = (inputx-wandloc[0]*inputx,wandloc[1]*inputy)
+		pygame.draw.circle(g.window, color=s.color, center=curr_spot, radius=s.size)
 		pygame.display.update()
+		s.add_rung(curr_spot, new_size)
 
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
