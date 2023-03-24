@@ -6,6 +6,7 @@ import sys
 from pygame.locals import *
 from random import random as rand
 import time
+from game import Game, Spell
 
 kernel = np.ones((4, 8), np.float32) / 25
 threshold = 127
@@ -14,13 +15,21 @@ ke1 = np.ones((6, 6), np.float32)
 kd1 = np.ones((6, 6), np.float32)
 starttime = 0
 
-prev_wandloc = [0,0]
-curr_wandloc = [0,0]
-delt_wandloc = [0,0]
+inputx = 1280
+inputy = 720
+pygame.init()
+screen = pygame.display.set_mode([inputx, inputy], pygame.RESIZABLE)
+pygame.display.set_caption('game')
+clock = pygame.time.Clock()
+pygame.display.update()
+running = True
+
 t = 0
 
-def capframe(vid, y1, y2, x1, x2, sub, g):
+def get_wand(vid, topleft, bottomright, sub, g):
 	global kernel, ke1, kd1, threshold, th
+	x1, y1 = topleft
+	x2, y2 = bottomright
 
 	# Frame                     ~ video (but it's blue)
 	ret, frame = vid.read()
@@ -52,16 +61,8 @@ def capframe(vid, y1, y2, x1, x2, sub, g):
 	# Dilate
 	frame = cv2.dilate(frame, kd1, iterations=2)
 
-	# Avoid playing that blip of white-screen at the beginning
-	if g.t < 5:
-		frame *= 0
-
 	if th > threshold:
 		th -= 1
-
-	#Put to the screen
-	#surface = pygame.surfarray.make_surface(np.rot90(frame))
-	#screen.blit(surface, (0, 0))
 
 	# Wand placement:
 	M = cv2.moments(frame)
@@ -72,33 +73,14 @@ def capframe(vid, y1, y2, x1, x2, sub, g):
 		cY = int(M["m01"] / M["m00"])
 	else:
 		cX, cY = 0, 0
-	#print("cX:"+str(cX)+", cY:"+str(cY))
 
-	# Get the direction
-	global curr_wandloc, prev_wandloc, delt_wandloc, t
-	if t % 10 == 0:
-		curr_wandloc[0] = cX
-		curr_wandloc[1] = cY
-		delt_wandloc = [curr_wandloc[0] - prev_wandloc[0], curr_wandloc[1] - prev_wandloc[1]]
+	wandpixels = np.sum(frame >= 255)
+	wandrelativesize = wandpixels / (frame.shape[0] * frame.shape[1])
 
-		print("curr_wandloc: "+str(curr_wandloc))
-		print("prev_wandloc: "+str(prev_wandloc))
-		print("delt_wandloc: "+str(delt_wandloc))
+	wandrelativeloc = [cX / frame.shape[0], cY / frame.shape[1]]
 
-		prev_wandloc[0] = cX
-		prev_wandloc[1] = cY
-		print(" ")
-	t += 1
+	return frame, wandrelativeloc, wandrelativesize
 
-	return frame
-
-	'''
-	#Switch the mode, if necessary.
-	if cv2.countNonZero(frame) < 10 and g.t > 50:
-		g.mode = 2
-		return g.mode
-	g.t += 1
-	'''
 
 if __name__ == "__main__":
 	time.sleep(2)
@@ -111,27 +93,35 @@ if __name__ == "__main__":
 	# Dimensions for cropping
 	outputx = 64
 	outputy = 25
-	inputx = vid.read()[1].shape[1]
-	inputy = vid.read()[1].shape[0]
+	sizex = vid.read()[1].shape[1]
+	sizey = vid.read()[1].shape[0]
 	desiredaspectratio = outputx / outputy
-	ypixelstokeep = inputx * desiredaspectratio
-	y1 = int(inputy - ypixelstokeep)
-	y2 = inputy
+	ypixelstokeep = sizey * desiredaspectratio
+	y1 = int(sizey - ypixelstokeep)
+	y2 = sizey
 	x1 = 0
-	x2 = inputx
-
-
-	class Game:
-		mode = 2
-		t = 0
-
+	x2 = sizex
+	topleft = [x1, y1]
+	bottomright = [x2, y2]
 
 	g = Game()
+	s = Spell()
 	running = True
 
 	while running:
-		frame = capframe(vid, y1, y2, x1, x2, sub, g)
-		cv2.imshow("Frame", frame)
+		frame, wandloc, wandsize = get_wand(vid, topleft, bottomright, sub, g)
+		#cv2.imshow("Frame", frame)
+		print(wandloc)
+
+		# Update the size.
+		prev_size = s.size
+		new_size = max(60, 100 * wandsize)
+		s.size = new_size
+
+		# Update the thing.
+		g.window.fill((0, 0, 0))
+		pygame.draw.circle(g.window, color=s.color, center=(inputx-wandloc[0]*inputx,wandloc[1]*inputy), radius=s.size)
+		pygame.display.update()
 
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
@@ -140,7 +130,7 @@ if __name__ == "__main__":
 		if currenttime > 100:
 			running = False
 
-		g.t += 1
+		t += 1
 
 	# After the loop release the cap object
 	vid.release()
